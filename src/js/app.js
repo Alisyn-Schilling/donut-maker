@@ -1,7 +1,7 @@
 import { Shop } from "./DonutMaker.js";
-
+import { HtmlWiringHelper } from "./HtmlWiringHelper.js";
 const shop = new Shop();
-
+const wiring = new HtmlWiringHelper(shop);
 const donutDisplay = document.querySelector(".click__display-donuts");
 const donutButton = document.querySelector(".click__add-donut");
 
@@ -21,111 +21,67 @@ const multiplierButton = document.querySelector(
 
 const resetButton = document.querySelector(".reset__button");
 
-const donutUpdate = () => {
-  donutDisplay.innerText =
-    "Donuts: " + Math.round(shop.checkDonuts()).toLocaleString("en");
-};
 const activateAutoClickers = () => {
   setInterval(() => {
     shop.addDonut(shop.autoClickers);
-    donutUpdate();
-    checkAutoClickerButton();
-    checkMultiplierButton();
+    wiring.donutDisplayUpdate(donutDisplay);
+    wiring.checkAutoClickerButton(autoClickerButton);
+    wiring.checkMultiplierButton(multiplierButton);
   }, 1000);
 };
 
-const checkAutoClickerButton = () => {
-  if (shop.donuts >= shop.autoClickerCost) {
-    autoClickerButton.disabled = false;
-  } else {
-    autoClickerButton.disabled = true;
-  }
-};
-
-const checkMultiplierButton = () => {
-  if (shop.donuts >= shop.multiplierCost) {
-    multiplierButton.disabled = false;
-  } else {
-    multiplierButton.disabled = true;
-  }
-};
-
 activateAutoClickers();
-checkAutoClickerButton();
-checkMultiplierButton();
+wiring.checkAutoClickerButton(autoClickerButton);
+wiring.checkMultiplierButton(multiplierButton);
 
 donutButton.addEventListener("click", () => {
   shop.addDonut();
-  donutUpdate();
-  checkAutoClickerButton();
-  checkMultiplierButton();
+  wiring.donutDisplayUpdate(donutDisplay);
+  wiring.checkAutoClickerButton(autoClickerButton);
+  wiring.checkMultiplierButton(multiplierButton);
 });
 
 autoClickerButton.addEventListener("click", () => {
   shop.buyAutoClicker();
-  autoClickerDisplay.innerText = "Auto Clickers: " + shop.autoClickers;
-  donutUpdate();
-  autoClickerButton.innerText =
-    "Buy Auto Clicker: " + shop.autoClickerCost.toFixed(2) + " Donuts";
-  checkAutoClickerButton();
-  checkMultiplierButton();
+  wiring.clickerDisplayUpdate(autoClickerDisplay);
+  wiring.donutDisplayUpdate(donutDisplay);
+  wiring.clickerButtonUpdate(autoClickerButton);
+  wiring.checkAutoClickerButton(autoClickerButton);
+  wiring.checkMultiplierButton(multiplierButton);
 });
 
 multiplierButton.addEventListener("click", () => {
   shop.buyDonutMultiplier();
-  multiplierDisplay.innerText = "Multipliers: " + shop.multipliers;
-  donutButton.innerText = "Buy " + shop.donutsPerClick.toFixed(2) + " Donuts";
-  donutUpdate();
-  multiplierButton.innerText =
-    "Buy multiplier: " + shop.multiplierCost.toFixed(2) + " Donuts";
-  checkMultiplierButton();
-  checkAutoClickerButton();
+  wiring.multiplierDisplayUpdate(multiplierDisplay);
+  wiring.donutButtonUpdate(donutButton);
+  wiring.donutDisplayUpdate(donutDisplay);
+  wiring.multiplierButtonUpdate(multiplierButton);
+  wiring.checkAutoClickerButton(autoClickerButton);
+  wiring.checkMultiplierButton(multiplierButton);
 });
 
 resetButton.addEventListener("click", () => {
   shop.reset();
-  donutUpdate();
-  autoClickerDisplay.innerText = "Auto Clickers: " + shop.autoClickers;
-  autoClickerButton.innerText =
-    "Buy Auto Clicker: " + Math.round(shop.autoClickerCost) + " Donuts";
-  multiplierDisplay.innerText = "Multipliers: " + shop.multipliers;
-  donutButton.innerText = "Buy " + Math.round(shop.donutsPerClick) + " Donut";
-  multiplierButton.innerText =
-    "Buy multiplier: " + Math.round(shop.multiplierCost) + " Donuts";
-  checkAutoClickerButton();
-  checkMultiplierButton();
+  wiring.donutDisplayUpdate(donutDisplay);
+  wiring.donutButtonUpdate(donutButton);
+  wiring.clickerDisplayUpdate(autoClickerDisplay);
+  wiring.clickerButtonUpdate(autoClickerButton);
+  wiring.multiplierDisplayUpdate(multiplierDisplay);
+  wiring.multiplierButtonUpdate(multiplierButton);
+  wiring.checkAutoClickerButton(autoClickerButton);
+  wiring.checkMultiplierButton(multiplierButton);
 });
 
 const companyInfo = document.querySelector(".company-info");
 
-companyInfo.addEventListener("click", () => {
-  event.preventDefault();
-  alert(
-    "We are a baking company dedicated to the customer experience. Every Donut is made with love and you can taste it in every bite."
-  );
-});
+wiring.companyInfoAlert(companyInfo);
 
 const inspiration = document.querySelector(".inspiration");
 
-inspiration.addEventListener("click", () => {
-  event.preventDefault();
-  window.open("https://orteil.dashnet.org/cookieclicker/", "_blank");
-});
+wiring.inspirationLink(inspiration);
 
 const modal = document.getElementById("modal");
 const contactInfo = document.querySelector(".contact-info");
 const span = document.getElementsByClassName("close")[0];
 
-contactInfo.addEventListener("click", () => {
-  modal.style.display = "block";
-});
-
-span.addEventListener("click", () => {
-  modal.style.display = "none";
-});
-
-window.addEventListener("click", (event) => {
-  if (event.target == modal) {
-    modal.style.display = "none";
-  }
-});
+wiring.contactInfo(modal, contactInfo, span);
